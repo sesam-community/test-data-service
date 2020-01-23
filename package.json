@@ -1,8 +1,8 @@
 {
-    "name": "EcoVadis",
+    "name": "test-data-service",
     "private": false,
     "version": "0.0.1",
-    "description": "A repo for connecting to the EcoVadis API",
+    "description": "A repo for doing automagic stuff",
     "author": "jonas.christensen@sesam.io",
     "license": "MIT",
     "scripts": {
