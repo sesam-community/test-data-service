@@ -36,9 +36,9 @@ def create_embedded_data():
     return_msg = None
     header = {'Authorization': f'Bearer {config.jwt}', "content_type": "application/json"}
     try:
-        sesam_config_request = requests.get(f"{config.base_url}/pipes/{pipe_id}/config", headers=header)
+        sesam_config_request = requests.get(f"{config.base_url}/pipes/{pipe_id}/config", headers=header, verify=False)
         json_config_response = json.loads(sesam_config_request.content.decode('utf-8-sig'))
-        sesam_entity_request = requests.get(f"{config.base_url}/datasets/{pipe_id}/entities", headers=header)
+        sesam_entity_request = requests.get(f"{config.base_url}/datasets/{pipe_id}/entities", headers=header, verify=False)
         json_entity_response = json.loads(sesam_entity_request.content.decode('utf-8-sig'))
         embedded_data = []
         entities_to_remove = []
@@ -79,7 +79,7 @@ def create_embedded_data():
             "transform": json_config_response["transform"]
             }
         
-        requests.put(f"{config.base_url}/pipes/{pipe_id}/config?force=True", headers=header, data=json.dumps(new_source))
+        requests.put(f"{config.base_url}/pipes/{pipe_id}/config?force=True", headers=header, data=json.dumps(new_source), verify=False)
         return_msg = f"Your pipe with id : {pipe_id} has been updated with test data"
     
     except Exception as e:
