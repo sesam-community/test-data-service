@@ -45,11 +45,7 @@ This repo uses the file ```package.json``` and [yarn](https://yarnpkg.com/lang/e
         "image": "sesamcommunity/test-data-service:version1.0",
         "port": 5000
     },
-    "proxy": {
-        "header_blacklist": ["CUSTOM_AUTHORIZATION"],
-        "sesam_authorization_header": "CUSTOM_AUTHORIZATION"
-      },
-    "verify_ssl": true
+    "verify_ssl": false
     }
 ```
 
