@@ -79,8 +79,11 @@ def create_embedded_data():
             "transform": json_config_response["transform"]
             }
         
-        requests.put(f"{config.base_url}/pipes/{pipe_id}/config?force=True", headers=header, data=json.dumps(new_source), verify=False)
-        return_msg = f"Your pipe with id : {pipe_id} has been updated with test data"
+        check_response = requests.put(f"{config.base_url}/pipes/{pipe_id}/config?force=True", headers=header, data=json.dumps(new_source), verify=False)
+        if not check_response.ok:
+            return_msg = f"Unexpected error : {check_response.content}", 500
+        else:    
+            return_msg = f"Your pipe with id : {pipe_id} has been updated with test data"
     
     except Exception as e:
         return_msg = f"Your pipe with id : {pipe_id} could unfortunately not be updated... I failed with the following error : {e}"
