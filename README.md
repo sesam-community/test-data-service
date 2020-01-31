@@ -35,12 +35,12 @@ This repo uses the file ```package.json``` and [yarn](https://yarnpkg.com/lang/e
 
 ```
     {
-    "_id": "test-data-servive",
+    "_id": "test-data-service",
     "type": "system:microservice",
     "docker": {
         "environment": {
-        "base_url": "$SECRET(sesam_jwt_token)",
-        "jwt": "$ENV(base_sesam_api_url)"
+        "jwt": "$SECRET(sesam_jwt_token)",
+        "base_url": "$ENV(base_sesam_api_url)"
         },
         "image": "sesamcommunity/test-data-service:version1.0",
         "port": 5000
