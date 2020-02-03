@@ -18,13 +18,17 @@ required_env_vars = ['jwt', 'base_url']
 def draw_representative_values(enteties,k=100,pseudonym=False):
     df = pd.DataFrame(enteties)
     new_df = pd.DataFrame()
-    cols = [col for col in list(df.columns)]
-    for col in cols:
+    for col in list(df.columns):
         vals = (df[col].value_counts()/len(df[col]))
-        properties = list(vals.index)
-        weights = list(vals.values)
+        if len(vals) == 0:
+            properties = [0,1]
+            weights = [0,1]
+        else:
+            properties = list(vals.index)
+            weights = list(vals.values)
+        
         new_df = pd.concat([new_df,pd.DataFrame(random.choices(properties, k=k,weights=weights))],axis=1)
-    new_df.columns = cols
+    new_df.columns = list(df.columns)
     return new_df.to_dict(orient='records')
 
 
@@ -57,23 +61,27 @@ def create_embedded_data():
         json_config_response = json.loads(sesam_config_request.content.decode('utf-8-sig'))
         sesam_entity_request = requests.get(f"{config.base_url}/datasets/{pipe_id}/entities", headers=header, verify=False)
         json_entity_response = json.loads(sesam_entity_request.content.decode('utf-8-sig'))
-        json_entity_response = draw_representative_values(json_entity_response,k=max_entities)
+
         embedded_data = []
         entities_to_remove = []
         for entity in json_entity_response[0]:
             if pipe_id not in entity and "_id" not in entity:
                     entities_to_remove.append(entity)
+        
+        json_entity_response = draw_representative_values(json_entity_response,k=max_entities)
         try:
             for mapping_entity in entities_to_remove:
-                for entity in json_entity_response[:max_entities]:
+                for entity in json_entity_response:
                     for sesam_property in list(entity):
                         if mapping_entity == sesam_property:
                             entity.pop(sesam_property)
                         if pipe_id in sesam_property:
                             entity[sesam_property.split(":",1)[1]] = entity.pop(sesam_property)
+            
             for entity in list(json_entity_response[:max_entities]):
                 _id = entity.get("_id").split(":",1)[1]
                 entity['_id'] = _id
+        
         except Exception as e:
             logger.error(f"Could not remove unnessary properties from this entity. Failed with : {e}")
         
