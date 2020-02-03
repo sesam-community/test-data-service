@@ -63,5 +63,5 @@ This repo uses the file ```package.json``` and [yarn](https://yarnpkg.com/lang/e
 
 ```
     / <- this is index route for seeing what you need to do..
-    /create?pipe_id=<the-pipe-you-want-to-update>
+    /create?pipe_id=<the-pipe-you-want-to-update>&entities=<your-desired-number>
 ```
