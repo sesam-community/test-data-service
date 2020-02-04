@@ -61,7 +61,7 @@ This repo uses the file ```package.json``` and [yarn](https://yarnpkg.com/lang/e
     Or :
     1. Use your browser and modify headers so that you can set the Bearer token to accept a jwt token in request headers.
         - I.e. in Google Chrome, use "Modify Headers" app to set request headers like so :
-            -   Authorization :Bearer <Your bearer token>  
+            -   Authorization :Bearer <"Your bearer token">  
 
     2. Go to the following url example to see how to use the service:
 
