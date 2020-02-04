@@ -52,6 +52,7 @@ This repo uses the file ```package.json``` and [yarn](https://yarnpkg.com/lang/e
 2. Connect to the system via the /proxy/ to see that it works :
 
     **The below method makes the url publically available, so use with caution and remove the "Anonymous" permission after use**
+    
     Either choose :
     1. Go into the System permissions tab and under 'local Permissions' add the following :
 
