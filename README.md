@@ -51,9 +51,16 @@ This repo uses the file ```package.json``` and [yarn](https://yarnpkg.com/lang/e
 
 2. Connect to the system via the /proxy/ to see that it works :
 
+    **The below method makes the url publically available, so use with caution and remove the "Anonymous" permission after use**
+    Either choose :
     1. Go into the System permissions tab and under 'local Permissions' add the following :
 
         ![Permissions](Permissions.png)
+
+    Or :
+    1. Use your browser and modify headers so that you can set the Bearer token to accept a jwt token in request headers.
+        - I.e. in Google Chrome, use "Modify Headers" app to set request headers like so :
+            -   Authorization :Bearer <Your bearer token>  
 
     2. Go to the following url example to see how to use the service:
 

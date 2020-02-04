@@ -77,7 +77,7 @@ def create_embedded_data():
                             entity.pop(sesam_property)
                         if pipe_id in sesam_property:
                             entity[sesam_property.split(":",1)[1]] = entity.pop(sesam_property)
-            
+                        
             for entity in list(json_entity_response[:max_entities]):
                 _id = entity.get("_id").split(":",1)[1]
                 entity['_id'] = _id
