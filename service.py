@@ -17,8 +17,11 @@ required_env_vars = ['jwt', 'base_url']
 
 def draw_representative_values(enteties,k=100,pseudonym=False):
     df = pd.DataFrame(enteties)
-    new_df = pd.DataFrame()
-    for col in list(df.columns):
+    if "_id" in df.columns:
+        del df["_id"]
+    new_df = pd.DataFrame(['Test id {}'.format(i) for i in range(k)])
+    cols = [col for col in list(df.columns)]
+    for col in cols:
         vals = (df[col].value_counts()/len(df[col]))
         if len(vals) == 0:
             properties = [0,1]
@@ -28,7 +31,7 @@ def draw_representative_values(enteties,k=100,pseudonym=False):
             weights = list(vals.values)
         
         new_df = pd.concat([new_df,pd.DataFrame(random.choices(properties, k=k,weights=weights))],axis=1)
-    new_df.columns = list(df.columns)
+    new_df.columns = ['_id'] + cols
     return new_df.to_dict(orient='records')
 
 
@@ -78,9 +81,9 @@ def create_embedded_data():
                         if pipe_id in sesam_property:
                             entity[sesam_property.split(":",1)[1]] = entity.pop(sesam_property)
                         
-            for entity in list(json_entity_response[:max_entities]):
-                _id = entity.get("_id").split(":",1)[1]
-                entity['_id'] = _id
+            #for entity in list(json_entity_response[:max_entities]):
+            #    _id = entity.get("_id").split(":",1)[1]
+            #    entity['_id'] = _id
         
         except Exception as e:
             logger.error(f"Could not remove unnessary properties from this entity. Failed with : {e}")
