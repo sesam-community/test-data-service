@@ -19,7 +19,7 @@ def draw_representative_values(enteties,k=100,pseudonym=False):
     df = pd.DataFrame(enteties)
     if "_id" in df.columns:
         del df["_id"]
-    new_df = pd.DataFrame(['Test id {}'.format(i) for i in range(k)])
+    new_df = pd.DataFrame(['test_entity_id_{}'.format(i) for i in range(k)])
     cols = [col for col in list(df.columns)]
     for col in cols:
         vals = (df[col].value_counts()/len(df[col]))
