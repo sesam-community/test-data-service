@@ -57,7 +57,7 @@ def create_embedded_data():
     max_entities = int(request.args.get('entities'))
     new_source = None
     return_msg = None
-    header = {'Authorization': f'Bearer {config.jwt}', "content_type": "application/json"}
+    header = {'Authorization': f'Bearer {config.jwt}', "content-type": "application/json"}
     
     try:
         sesam_config_request = requests.get(f"{config.base_url}/pipes/{pipe_id}/config", headers=header, verify=False)
