@@ -151,7 +151,7 @@ def create_embedded_data():
                                     for nested_dicts in schema_value:
                                         for nested_key, nested_value in nested_dicts.items():
                                             if response_key.split(':')[-1] in nested_key:
-                                                if schema_key not in new_entity:
+                                                if schema_value not in new_entity:
                                                     new_entity[schema_key][schema_value] = {}
                                                 new_entity[schema_key][schema_value][nested_key] = response_value
 
