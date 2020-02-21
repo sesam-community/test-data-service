@@ -72,13 +72,32 @@ def cleaning_json_schema(pipe_id, json_entity_response):
             if type(response_value) is dict:
                 for nested_keys in list(response_value):
                     response_value[nested_keys.split(":",1)[1]] = response_value.pop(nested_keys)
+                    for keys, value in response_value.items():
+                        if type(value) is list:
+                            for nested_keys in value:
+                                if type(nested_keys) is dict:
+                                    try:
+                                        response_value[nested_keys.split(":",1)[-1]] = response_value.pop(nested_keys)
+                                    except Exception:
+                                        for keys in list(nested_keys):
+                                            nested_keys[keys.split(":")[-1]] = nested_keys.pop(keys)
+                                    for key, val in nested_keys.items():
+                                        if type(val) is dict:
+                                            for nested_val in list(val):
+                                                val[nested_val.split(":")[-1]] = val.pop(nested_val)
             
             if type(response_value) is list:
                 for nested_keys in response_value:
-                    response_value[nested_keys.split(":",1)[1]] = response_value.pop(nested_keys)
-
-            else:
-                pass
+                    if type(nested_keys) is dict:
+                        try:
+                            response_value[nested_keys.split(":",1)[-1]] = response_value.pop(nested_keys)
+                        except Exception:
+                            for keys in list(nested_keys):
+                                nested_keys[keys.split(":")[-1]] = nested_keys.pop(keys)
+                        for key, val in nested_keys.items():
+                            if type(val) is dict:
+                                for nested_val in list(val):
+                                    val[nested_val.split(":")[-1]] = val.pop(nested_val)
                         
     except Exception as e:
         logger.error(f"Could not remove unnessary properties from this entity. Failed with : {e}")
@@ -142,19 +161,22 @@ def create_embedded_data():
                             for schema_key, schema_value in schema_elements.items():
                                 if type(schema_value) is dict:
                                     for nested_key, nested_value in schema_value.items():
+                                        if type(nested_value) is list:
+                                            if nested_key not in new_entity[schema_key]:
+                                                new_entity[schema_key][nested_key] = []
+                                                for nested_dicts in nested_value:
+                                                    new_entity[schema_key][nested_key].append(nested_dicts)
                                         if response_key.split(':')[-1] in nested_key:
                                             if schema_key not in new_entity:
                                                 new_entity[schema_key] = {}
                                             new_entity[schema_key][nested_key] = response_value
-
+                                            
                                 if type(schema_value) is list:
-                                    for nested_dicts in schema_value:
-                                        for nested_key, nested_value in nested_dicts.items():
-                                            if response_key.split(':')[-1] in nested_key:
-                                                if schema_value not in new_entity:
-                                                    new_entity[schema_key][schema_value] = {}
-                                                new_entity[schema_key][schema_value][nested_key] = response_value
-
+                                    if schema_key not in new_entity:
+                                        new_entity[schema_key] = []
+                                        for nested_dicts in schema_value:
+                                            new_entity[schema_key].append(nested_dicts)
+                                            
                         except Exception:
                             pass      
 
