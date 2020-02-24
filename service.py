@@ -1,10 +1,7 @@
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify
 import json
 import requests
-import copy
-import os
 import sys
-import re
 from sesamutils import VariablesConfig, sesam_logger
 import pandas as pd
 import random
@@ -17,7 +14,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 ## Helpers
 required_env_vars = ['jwt', 'base_url']
 
-def draw_representative_values(entities,k=100,pseudonym=False):
+def draw_representative_values(entities, k=100, pseudonym=False):
     df = pd.DataFrame(entities)
     if "_id" in df.columns:
         del df["_id"]
@@ -32,7 +29,7 @@ def draw_representative_values(entities,k=100,pseudonym=False):
             properties = list(vals.index)
             weights = list(vals.values)
         
-        new_df = pd.concat([new_df,pd.DataFrame(random.choices(properties, k=k,weights=weights))],axis=1)
+        new_df = pd.concat([new_df, pd.DataFrame(random.choices(properties, k=k, weights=weights))], axis=1)
     new_df.columns = ['_id'] + cols
     return new_df.to_dict(orient='records')
 
@@ -66,18 +63,18 @@ def cleaning_json_schema(pipe_id, json_entity_response):
                     if mapping_entity == sesam_property:
                         entity.pop(sesam_property)
                     if pipe_id in sesam_property:
-                        entity[sesam_property.split(":",1)[1]] = entity.pop(sesam_property)
+                        entity[sesam_property.split(":", 1)[1]] = entity.pop(sesam_property)
         
         for response_key, response_value in json_entity_response[0].items():
             if type(response_value) is dict:
                 for nested_keys in list(response_value):
-                    response_value[nested_keys.split(":",1)[1]] = response_value.pop(nested_keys)
+                    response_value[nested_keys.split(":", 1)[1]] = response_value.pop(nested_keys)
                     for keys, value in response_value.items():
                         if type(value) is list:
                             for nested_keys in value:
                                 if type(nested_keys) is dict:
                                     try:
-                                        response_value[nested_keys.split(":",1)[-1]] = response_value.pop(nested_keys)
+                                        response_value[nested_keys.split(":", 1)[-1]] = response_value.pop(nested_keys)
                                     except Exception:
                                         for keys in list(nested_keys):
                                             nested_keys[keys.split(":")[-1]] = nested_keys.pop(keys)
@@ -90,7 +87,7 @@ def cleaning_json_schema(pipe_id, json_entity_response):
                 for nested_keys in response_value:
                     if type(nested_keys) is dict:
                         try:
-                            response_value[nested_keys.split(":",1)[-1]] = response_value.pop(nested_keys)
+                            response_value[nested_keys.split(":", 1)[-1]] = response_value.pop(nested_keys)
                         except Exception:
                             for keys in list(nested_keys):
                                 nested_keys[keys.split(":")[-1]] = nested_keys.pop(keys)
@@ -125,8 +122,6 @@ def create_embedded_data():
         sys.exit(1)
     pipe_id = request.args.get('pipe_id')
     max_entities = int(request.args.get('entities'))
-    new_source = None
-    return_msg = None
     header = {'Authorization': f'Bearer {config.jwt}', "content-type": "application/json"}
     
     try:
