@@ -4,6 +4,7 @@ import requests
 import sys
 from sesamutils import VariablesConfig, sesam_logger
 import pandas as pd
+import os
 import random
 import urllib3
 
@@ -50,7 +51,7 @@ def flatten_json(nested_json):
     flatten(nested_json)
     return out
 
-def cleaning_json_schema(pipe_id, json_entity_response): 
+def cleaning_json_schema(pipe_id, json_entity_response):
     entities_to_remove = []
     for entity in json_entity_response[0]:
         if pipe_id not in entity and "_id" not in entity:
@@ -82,7 +83,25 @@ def cleaning_json_schema(pipe_id, json_entity_response):
                                         if type(val) is dict:
                                             for nested_val in list(val):
                                                 val[nested_val.split(":")[-1]] = val.pop(nested_val)
-            
+                        
+                        if type(value) is dict:
+                            for keys_nested in list(value):
+                                try:
+                                    value[keys_nested.split(":", 1)[-1]] = value.pop(keys_nested)
+                                except Exception:
+                                    for keys in list(keys_nested):
+                                            keys_nested[keys.split(":")[-1]] = keys_nested.pop(keys)
+
+                                for nested_key, nested_value in value.items():
+                                    if type(nested_value) is dict:
+                                        for nested_keys in list(nested_value):
+                                            nested_value[nested_keys.split(":")[-1]] = nested_value.pop(nested_keys)
+                                
+                                   
+                            
+                                    
+
+                                              
             if type(response_value) is list:
                 for nested_keys in response_value:
                     if type(nested_keys) is dict:
@@ -130,7 +149,7 @@ def create_embedded_data():
         sesam_entity_request = requests.get(f"{config.base_url}/datasets/{pipe_id}/entities?deleted=False&history=False", headers=header, verify=False)
         json_entity_response = json.loads(sesam_entity_request.content.decode('utf-8-sig'))
         json_schema_response = json.loads(sesam_entity_request.content.decode('utf-8-sig'))
-        
+       
         json_mapping_schema = cleaning_json_schema(pipe_id, json_schema_response[:1])
 
         flattened_entities = []
@@ -144,7 +163,6 @@ def create_embedded_data():
             new_entity = {}
             for response_key, response_value in response_elements.items():
                 for schema_elements in json_mapping_schema:
-                    
                     if response_key in schema_elements:
                         new_entity[response_key] = response_value
                         
@@ -156,16 +174,28 @@ def create_embedded_data():
                             for schema_key, schema_value in schema_elements.items():
                                 if type(schema_value) is dict:
                                     for nested_key, nested_value in schema_value.items():
+            
+                                        if response_key.split(':')[-1] in nested_key:
+                                            if schema_key not in new_entity:
+                                                new_entity[schema_key] = {}
+                                            new_entity[schema_key][nested_key] = response_value
+                                        
                                         if type(nested_value) is list:
                                             if nested_key not in new_entity[schema_key]:
                                                 new_entity[schema_key][nested_key] = []
                                                 for nested_dicts in nested_value:
                                                     new_entity[schema_key][nested_key].append(nested_dicts)
-                                        if response_key.split(':')[-1] in nested_key:
-                                            if schema_key not in new_entity:
-                                                new_entity[schema_key] = {}
-                                            new_entity[schema_key][nested_key] = response_value
-                                            
+                                        
+                                        if type(nested_value) is dict:
+                                            if response_key.split(':')[-1] in nested_key:
+                                                if nested_key not in new_entity[schema_key]:
+                                                    new_entity[schema_key][nested_key] = {}
+                                                new_entity[schema_key][nested_key] = nested_value
+
+                                        if nested_key not in new_entity[schema_key]:
+                                            new_entity[schema_key][nested_key] = {}
+                                        new_entity[schema_key][nested_key] = nested_value
+      
                                 if type(schema_value) is list:
                                     if schema_key not in new_entity:
                                         new_entity[schema_key] = []
