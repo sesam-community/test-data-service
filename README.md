@@ -1,6 +1,9 @@
 # Test data service 
 A connector for automatically creating "embedded" test data.
 
+## Support of property structures (nested elements)
+The service supports 3 layers of nested dicts in dicts and nested lists with 1 layer of nested dicts
+
 ## Prerequisites
 python3
 
