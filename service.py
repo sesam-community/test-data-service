@@ -96,11 +96,6 @@ def cleaning_json_schema(pipe_id, json_entity_response):
                                     if type(nested_value) is dict:
                                         for nested_keys in list(nested_value):
                                             nested_value[nested_keys.split(":")[-1]] = nested_value.pop(nested_keys)
-                                
-                                   
-                            
-                                    
-
                                               
             if type(response_value) is list:
                 for nested_keys in response_value:
